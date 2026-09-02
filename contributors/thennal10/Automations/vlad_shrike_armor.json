@@ -1,0 +1,37 @@
+{
+  "isGeneral": false,
+  "lid": "mf_vlad",
+  "name": "",
+  "reaction": {
+    "triggers": [
+      "onAttack",
+      "onTechAttack"
+    ],
+    "evaluate": "return triggerData.distanceToTrigger <= 3;",
+    "triggerDescription": "",
+    "effectDescription": "",
+    "actionType": "Automation",
+    "frequency": "Unlimited",
+    "checkReaction": false,
+    "requireCanProvoke": false,
+    "checkUsage": false,
+    "autoActivate": true,
+    "awaitActivationCompletion": false,
+    "triggerSelf": false,
+    "triggerOther": false,
+    "triggerTarget": true,
+    "outOfCombat": true,
+    "onlyOnSourceMatch": false,
+    "sceneReactor": "off",
+    "sceneId": "",
+    "activationType": "code",
+    "activationMode": "instead",
+    "activationMacro": "",
+    "activationCode": "const isCoreActive = reactorToken.actor.system.statuses.core_power_active;\nconst damageAmount = isCoreActive ? 3 : 1;\n\nawait api.executeDamageRoll(\n    reactorToken, \n    [triggerData.triggeringToken], \n    damageAmount, \n    'Kinetic', \n    'Shrike Armor', \n    { ap: true }\n);",
+    "onInit": "",
+    "onMessage": "",
+    "reactionPath": "traits[1]",
+    "comments": "",
+    "dispositionFilter": null
+  }
+}

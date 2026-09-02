@@ -1,0 +1,80 @@
+{
+  "type": "lancer-automations-pack",
+  "version": 1,
+  "name": "Amber Phantom Pack",
+  "exportDate": "2026-09-02T10:23:09.387Z",
+  "itemReactions": {
+    "mf_amber_phantom": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "traits[0]",
+          "triggers": [
+            "onRoundStart"
+          ],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": true,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "code",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "await api.addGlobalBonus(reactorToken.actor, {\n    id: `hyperawareness`,\n    name: \"Hyperawareness\",\n    type: \"multi\",\n    bonuses: [\n        {\n            type: \"difficulty\",\n            val: 1,\n            rollTypes: [\"attack\"], \n            applyToTargetter: true \n        },\n        {\n            type: \"accuracy\",\n            val: 1,\n            rollTypes: [\"check\"] \n        }\n    ]\n}, {\n    // expires the bonus at the start of the token's first turn this round\n    duration: 'start',\n    durationTurns: 0\n});",
+          "onInit": "",
+          "onMessage": "",
+          "triggerSelf": true,
+          "triggerOther": true,
+          "triggerTarget": false,
+          "outOfCombat": false,
+          "dispositionFilter": null
+        },
+        {
+          "reactionPath": "traits[1]",
+          "triggers": [
+            "onMiss",
+            "onTechMiss"
+          ],
+          "evaluate": "const currentRound = game.combat?.round ?? 0;\nconst lastUsedRound = api.getActorFlags(reactorToken.actor, \"battle_oracle_round\");\n    \nif (lastUsedRound === currentRound && currentRound !== 0) return false;\n\nreturn api.isHostile(reactorToken, triggerData.triggeringToken);",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "1/Round",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": true,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "code",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "const ask = await api.askCard({\n    title: \"Battle Oracle\",\n    description: `Missed by ${triggerData.triggeringToken.name}! Pull a character 2 spaces within Sensors?`,\n    owner: reactorToken,\n    yesText: \"Pull\",\n    noText: \"Pass\"\n});\n\nif (!ask.confirmed) return;\n\n// consume the 1/round use\nconst currentRound = game.combat?.round ?? 0;\nawait api.addActorFlags(reactorToken.actor, { \"battle_oracle_round\": currentRound });    \n\nconst targets = await api.chooseToken(reactorToken, {\n    title: \"SELECT PULL TARGET\",\n    range: 'sensors',\n    count: 1,\n    includeSelf: true\n});\n\nif (!targets || !targets.length) return;\n\nawait api.knockBackToken(targets, 2, { \n    triggeringToken: reactorToken,\n    title: \"PULL\",\n    description: \"Select destination to pull the target to.\"\n});\n",
+          "onInit": "",
+          "onMessage": "",
+          "triggerSelf": false,
+          "triggerOther": false,
+          "triggerTarget": true,
+          "outOfCombat": false,
+          "dispositionFilter": null
+        }
+      ]
+    }
+  },
+  "generalReactions": {},
+  "startupScripts": []
+}

@@ -1,0 +1,139 @@
+{
+  "type": "lancer-automations-pack",
+  "version": 1,
+  "name": "Pegasus Pack",
+  "exportDate": "2026-09-02T10:25:13.998Z",
+  "itemReactions": {
+    "mf_pegasus": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "core_system.passive_actions[0]",
+          "triggers": [
+            "onActivation"
+          ],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Free Action",
+          "frequency": "1/Round",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": true,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": true,
+          "activationType": "code",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "const targets = await api.chooseToken(reactorToken, {\n    count: 1,\n    range: 15,\n    title: 'Ushabti Omnigun',\n    includeSelf: false\n});\n\nif (!targets?.length) return;\n\nawait api.executeDamageRoll(reactorToken, targets, '1', 'Kinetic', 'Ushabti Omnigun', { paracausal: true });",
+          "onInit": "",
+          "onMessage": "",
+          "triggerSelf": true,
+          "triggerOther": true,
+          "triggerTarget": false,
+          "outOfCombat": true,
+          "dispositionFilter": null
+        }
+      ]
+    },
+    "mw_mimic_gun": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "",
+          "triggers": [],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": false,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "activationType": "flow",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "",
+          "onInit": "async function(token, item, api) {\n  await api.addExtraActions(item, [\n    { name: 'Cycle Mimic Gun', activation: 'Free', detail: 'Manually cycle to the next range.' }\n  ]);\n}",
+          "onMessage": "",
+          "triggerSelf": false,
+          "triggerOther": true,
+          "triggerTarget": false,
+          "outOfCombat": false,
+          "dispositionFilter": null
+        },
+        {
+          "reactionPath": "actions[0]",
+          "triggers": [
+            "onActivation"
+          ],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Full Action",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": true,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": true,
+          "activationType": "code",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "let flags = api.getItemFlags(item) || {};\nlet x = flags.mimic_x || 1, y = flags.mimic_y || 1, z = flags.mimic_z || 1;\nlet step = flags.mimic_step || 0;\n\nconsole.log(triggerData.actionName);\nif (triggerData.actionName.includes('Provoke')) {\n    const roll = await new Roll('3d20').evaluate({ async: true });\n    x = roll.terms[0].results[0].result;\n    y = roll.terms[0].results[1].result;\n    z = roll.terms[0].results[2].result;\n    await roll.toMessage({ \n      speaker: ChatMessage.getSpeaker({ token: reactorToken.document }), \n      flavor: `<b>Provoking Mimic Gun</b><br>Range X: ${x} | Range Y: ${y} | Range Z: ${z}` \n    });\n    step = 0;\n} else if (triggerData.actionName.includes('Cycle')) {\n    step = (step + 1) % 3;\n}\n\nawait api.addItemFlags(item, { mimic_x: x, mimic_y: y, mimic_z: z, mimic_step: step });\n\nconst ranges = [x, y, z];\nconst currentRange = ranges[step];\nconst currentDamage = 1 + Math.ceil(currentRange / 2);\n\nconst profiles = foundry.utils.duplicate(item.system.profiles);\nprofiles[0].range = [{ type: 'Range', val: currentRange }];\nprofiles[0].damage = [{ type: 'Kinetic', val: currentDamage.toString() }];\nawait item.update({ 'system.profiles': profiles });\n\nui.notifications.info(`Mimic Gun set to Range ${currentRange}, Damage ${currentDamage}`);",
+          "onInit": "",
+          "onMessage": "",
+          "triggerSelf": true,
+          "triggerOther": true,
+          "triggerTarget": false,
+          "outOfCombat": true,
+          "dispositionFilter": null
+        },
+        {
+          "reactionPath": "",
+          "triggers": [
+            "onEnterCombat",
+            "onTurnStart"
+          ],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": true,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "activationType": "code",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "if (triggerType === 'onEnterCombat') {\n    await api.executeItemActivation(item, { path: 'system.actions.0' });\n} else if (triggerType === 'onTurnStart') {\n    if (game.combat && game.combat.round > 1) {\n\t\t// proccing the extra action directly didn't work for some reason, so direct repitition of the cycle activation\n   \t\n        let flags = api.getItemFlags(item) || {};\n        let x = flags.mimic_x || 1, y = flags.mimic_y || 1, z = flags.mimic_z || 1;\n\n        let step = ((flags.mimic_step || 0) + 1) % 3;\n        await api.addItemFlags(item, { mimic_step: step });\n\n        const currentRange = [x, y, z][step];\n        const currentDamage = 1 + Math.ceil(currentRange / 2);\n\n        const profiles = foundry.utils.duplicate(item.system.profiles);\n        profiles[0].range = [{ type: 'Range', val: currentRange }];\n        profiles[0].damage = [{ type: 'Kinetic', val: currentDamage.toString() }];\n        await item.update({ 'system.profiles': profiles });\n\n        ui.notifications.info(`Mimic Gun cycled to Range ${currentRange}, Damage ${currentDamage}`);    }\n}",
+          "onInit": "",
+          "onMessage": "",
+          "triggerSelf": true,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": false,
+          "dispositionFilter": null
+        }
+      ]
+    }
+  },
+  "generalReactions": {},
+  "startupScripts": []
+}
