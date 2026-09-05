@@ -1,0 +1,37 @@
+{
+    "isGeneral": false,
+    "lid": "npc-rebake_npcf_juggernaut_ultra",
+    "name": "",
+    "reaction": {
+        "triggers": [
+            "onTurnStart",
+            "onActivation"
+        ],
+        "evaluate": "function evaluate(triggerType, triggerData, reactorToken, item, activationName, api) {\n    const conditionNames = [\n        \"Immobilized\",\n        \"Impaired\",\n        \"Jammed\",\n        \"Lock On\",\n        \"Shredded\",\n        \"Slowed\",\n        \"Stunned\",\n    ];\n\n    return api.getAllEffects(reactorToken).some((e) => conditionNames.includes(e.name));\n}\n",
+        "triggerDescription": "",
+        "effectDescription": "",
+        "actionType": "Automation",
+        "frequency": "Unlimited",
+        "checkReaction": false,
+        "requireCanProvoke": false,
+        "checkUsage": false,
+        "autoActivate": false,
+        "awaitActivationCompletion": false,
+        "triggerSelf": true,
+        "triggerOther": false,
+        "triggerTarget": false,
+        "outOfCombat": false,
+        "onlyOnSourceMatch": false,
+        "sceneReactor": "off",
+        "sceneId": "",
+        "activationType": "code",
+        "activationMode": "instead",
+        "activationMacro": "",
+        "activationCode": "async function activation(triggerType, triggerData, reactorToken, item, activationName, api) {\n    const actor = reactorToken.actor;\n    if (!actor || !item) return;\n\n    const conditionNames = [\n        \"Immobilized\",\n        \"Impaired\",\n        \"Jammed\",\n        \"Lock On\",\n        \"Shredded\",\n        \"Slowed\",\n        \"Stunned\",\n    ];\n    const superiorFrameConditions = [\"Immobilized\", \"Slowed\"];\n\n    const conditionEffects = api\n        .getAllEffects(reactorToken)\n        .filter((e) => conditionNames.includes(e.name));\n\n    const hasSuperiorFrame = actor.itemTypes.npc_feature.some(\n        (i) => i.system.lid === \"npc-rebake_npcf_superior_frame_ultra\",\n    );\n\n    const chosenConditionEffect = await api.pickCard(conditionEffects, {\n        description: \"Choose a condition to clear.\",\n        item,\n        label(effect) {\n            if (hasSuperiorFrame && superiorFrameConditions.includes(effect.name)) {\n                return `${effect.name} (Superior Frame usable)`;\n            }\n\n            return effect.name;\n        },\n        originToken: reactorToken,\n        title: activationName,\n    });\n    if (!chosenConditionEffect) return;\n\n    /** @type {Choices} */\n    const choices = [];\n\n    if (!conditionEffects.some((e) => e.name === \"Impaired\")) {\n        choices.push({\n            callback() {\n                return api.applyEffectsToTokens({\n                    duration: { label: \"end\", turns: 0 },\n                    effectNames: [\"impaired\"],\n                    tokens: [reactorToken],\n                });\n            },\n            text: \"become Impaired until the end of the turn\",\n        });\n    }\n\n    choices.push(\n        {\n            callback() {\n                return api.executeDamageRoll(reactorToken, [reactorToken], 5, \"Energy\", item.name, {\n                    paracausal: true,\n                });\n            },\n            text: \"take 5 energy damage (can't be reduced)\",\n        },\n        {\n            callback() {\n                return actor.update({ \"system.action_tracker.full\": false });\n            },\n            text: \"only have a quick action available\",\n        },\n    );\n\n    if (hasSuperiorFrame && superiorFrameConditions.includes(chosenConditionEffect.name)) {\n        choices.push({\n            callback() {\n                return api.executeDamageRoll(reactorToken, [reactorToken], 4, \"Heat\", item.name);\n            },\n            text: \"take 4 heat (through Superior Frame)\",\n        });\n    }\n\n    const result = await api.startChoiceCard({\n        choices,\n        description: `Choose how to clear \"${chosenConditionEffect.name}\"`,\n        item,\n        originToken: reactorToken,\n        title: activationName,\n    });\n    if (!result) return;\n\n    await api.deleteEffect(reactorToken, chosenConditionEffect);\n}\n",
+        "onInit": "",
+        "onMessage": "",
+        "reactionPath": "",
+        "comments": "Automates the removal of conditions with a trade-off.",
+        "dispositionFilter": null
+    }
+}
