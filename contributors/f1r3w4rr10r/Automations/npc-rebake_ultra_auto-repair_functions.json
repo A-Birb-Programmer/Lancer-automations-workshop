@@ -1,0 +1,37 @@
+{
+    "isGeneral": false,
+    "lid": "npc-rebake_npcf_auto-repair_functions_ultra",
+    "name": "",
+    "reaction": {
+        "triggers": [
+            "onTurnEnd",
+            "onActivation"
+        ],
+        "evaluate": "function evaluate(triggerType, triggerData, reactorToken, item, activationName, api) {\n    const actor = reactorToken.actor;\n    if (!actor) return false;\n\n    const eligibleTypes = [\"System\", \"Weapon\"];\n\n    return actor.itemTypes.npc_feature.some(\n        (f) => f.system.destroyed && eligibleTypes.includes(f.system.type ?? \"\"),\n    );\n}\n",
+        "triggerDescription": "",
+        "effectDescription": "",
+        "actionType": "Automation",
+        "frequency": "Unlimited",
+        "checkReaction": false,
+        "requireCanProvoke": false,
+        "checkUsage": false,
+        "autoActivate": false,
+        "awaitActivationCompletion": false,
+        "triggerSelf": true,
+        "triggerOther": false,
+        "triggerTarget": false,
+        "outOfCombat": false,
+        "onlyOnSourceMatch": false,
+        "sceneReactor": "off",
+        "sceneId": "",
+        "activationType": "code",
+        "activationMode": "instead",
+        "activationMacro": "",
+        "activationCode": "async function activation(triggerType, triggerData, reactorToken, item, activationName, api) {\n    const actor = reactorToken.actor;\n    if (!actor || !item) return;\n\n    const eligibleTypes = [\"System\", \"Weapon\"];\n\n    const destroyedItems = actor.itemTypes.npc_feature.filter(\n        (f) => f.system.destroyed && eligibleTypes.includes(f.system.type ?? \"\"),\n    );\n\n    const chosenItem = await api.pickCard(destroyedItems, {\n        description: \"Choose a weapon or system to repair.\",\n        item,\n        originToken: reactorToken,\n        title: item.name,\n    });\n    if (!chosenItem) return;\n\n    /** @type {Choices} */\n    const choices = [];\n\n    if (!api.hasStatus(reactorToken, \"jammed\")) {\n        choices.push({\n            callback() {\n                return api.applyEffectsToTokens({\n                    duration: { label: \"start\", turns: 1 },\n                    effectNames: [\"jammed\"],\n                    tokens: [reactorToken],\n                });\n            },\n            text: \"become Jammed\",\n        });\n    }\n\n    choices.push({\n        callback() {\n            return api.executeDamageRoll(reactorToken, [reactorToken], \"1d6\", \"Heat\", item.name);\n        },\n        text: \"take 1d6 heat\",\n    });\n\n    const result = await api.startChoiceCard({\n        choices,\n        description: `Choose how to repair \"${chosenItem.name}\"`,\n        item,\n        originToken: reactorToken,\n        title: activationName,\n    });\n    if (!result) return;\n\n    await chosenItem.update({ \"system.destroyed\": false });\n}\n",
+        "onInit": "",
+        "onMessage": "",
+        "reactionPath": "",
+        "comments": "Automates the repair of weapons and systems with a trade-off.",
+        "dispositionFilter": null
+    }
+}
