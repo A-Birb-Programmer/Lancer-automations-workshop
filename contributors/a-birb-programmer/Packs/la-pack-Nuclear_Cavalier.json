@@ -1,0 +1,82 @@
+{
+  "type": "lancer-automations-pack",
+  "version": 1,
+  "name": "Nuclear Cavalier",
+  "exportDate": "2026-09-09T06:40:31.910Z",
+  "itemReactions": {
+    "t_nuclear_cavalier": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "ranks[0]",
+          "triggers": [
+            "onTurnStart",
+            "onAttack",
+            "onTechAttack"
+          ],
+          "evaluate": "function (triggerType, triggerData, reactorToken, item, activationName, api) {\n    var firstAttack = api.getTokenFlags(reactorToken, \"firstAttack\")\n    var firstTechAttack = api.getTokenFlags(reactorToken, \"firstTechAttack\");\n    const isCurrentTurn = game.combat?.combatant?.tokenId === reactorToken.id;\n    const isInDangerZone = api.inDangerZone(reactorToken);\n    if (firstAttack == undefined) {\n        var firstAttack = true\n    }\n    if (firstTechAttack == undefined) {\n        var firstTechAttack = true\n    }\n\tvar firstAttack = firstAttack && firstTechAttack\n    if (triggerType == \"onTurnStart\" || triggerType == \"onTechAttack\") {\n        return true;\n    };\n    if (firstAttack && isCurrentTurn && isInDangerZone) {\n        return true;\n    };\n    return false;\n}",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": true,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "code",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "async function (triggerType, triggerData, reactorToken, item, activationName, api) {\n    if (triggerType == \"onTurnStart\") {\n        await api.addTokenFlags(reactorToken, { firstAttack: true });\n        await api.addTokenFlags(reactorToken, { firstTechAttack: true });\n    };\n    if (triggerType == \"onAttack\" || triggerType == \"onTechAttack\") {\n        if (triggerType == \"onAttack\") {\n           await api.addTokenFlags(reactorToken, { firstAttack: false });\n        };\n        if (triggerType == \"onTechAttack\") {\n           await api.addTokenFlags(reactorToken, { firstTechAttack: false });\n        };\n        await api.addGlobalBonus(reactorToken.actor, {\n        \tname: \"Aggressive Heat Bleed\",\n            type: \"damage\",\n            uses: 1,\n            damageMode: \"add\",\n            damage: [\n            {\n                val: \"2\",\n                type: \"Heat\"\n            }\n        \t],\n        \tconsumeOnUsage: true\n    \t\t}, {\n            duration: \"indefinite\",\n            durationTurns: 1,\n            origin: reactorToken.id,\n            consumption: {\n                trigger: [\n                    \"onMiss\",\n                    \"onPreDamage\",\n                    \"onTurnEnd\"\n                ],\n                originId: reactorToken.id,\n                role: \"source\"\n            }\n        });\n    }\n}",
+          "onInit": "",
+          "onMessage": "",
+          "triggerSelf": true,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": false,
+          "dispositionFilter": null
+        },
+        {
+          "reactionPath": "ranks[1]",
+          "triggers": [
+            "onTurnStart",
+            "onAttack"
+          ],
+          "evaluate": "function (triggerType, triggerData, reactorToken, item, activationName, api) {\n    var firstAttack = api.getTokenFlags(reactorToken, \"firstAttack\");\n    const isCurrentTurn = game.combat?.combatant?.tokenId === reactorToken.id;\n    const isInDangerZone = api.inDangerZone(reactorToken);\n    if (firstAttack == undefined) {\n        var firstAttack = true\n    }\n\n    if (triggerType == \"onTurnStart\") {\n        return true;\n    };\n    if (firstAttack && isCurrentTurn && isInDangerZone) {\n        return true;\n    };\n    return false;\n}",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": true,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "code",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "async function (triggerType, triggerData, reactorToken, item, activationName, api) {\n    if (triggerType == \"onTurnStart\") {\n        await api.addTokenFlags(reactorToken, { firstAttack: true });\n        \n    };\n    if (triggerType == \"onAttack\") {\n        await api.addTokenFlags(reactorToken, {firstAttack: false});\n        await api.addGlobalBonus(reactorToken.actor, {\n            name: \"Change Damage Type\",\n            type: \"damage\",\n            uses: 1,\n            rollTypes: [\n                \"all\"\n            ],\n            damageMode: \"change_type\",\n            damage: [\n                {\n                    from: \"Kinetic\",\n                    to: \"Energy\"\n                },\n                {\n                    from: \"Explosive\",\n                    to: \"Energy\"\n                }\n            ],\n            consumeOnUsage: true\n      \t\t}, {\n            duration: \"indefinite\",\n            durationTurns: 1,\n            origin: reactorToken.id,\n            consumption: {\n                trigger: [\n                    \"onMiss\",\n                    \"onPreDamage\",\n                    \"onTurnEnd\"\n                ],\n                originId: reactorToken.id,\n                role: \"source\"\n            }\n        });\n        await api.addGlobalBonus(reactorToken.actor, {\n        \tname: \"Fusion Hemorrhage\",\n            type: \"damage\",\n            uses: 1,\n            damageMode: \"add\",\n            damage: [\n            {\n                val: \"1d6\",\n                type: \"Energy\"\n            }\n        \t],\n        \tconsumeOnUsage: true\n    \t\t}, {\n            duration: \"indefinite\",\n            durationTurns: 1,\n            origin: reactorToken.id,\n            consumption: {\n                trigger: [\n                    \"onMiss\",\n                    \"onPreDamage\",\n                    \"onTurnEnd\"\n                ],\n                originId: reactorToken.id,\n                role: \"source\"\n            }\n        });\n    }\n}",
+          "onInit": "",
+          "onMessage": "",
+          "triggerSelf": true,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": false,
+          "dispositionFilter": null
+        }
+      ]
+    }
+  },
+  "generalReactions": {},
+  "startupScripts": []
+}
