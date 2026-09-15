@@ -15,7 +15,7 @@
           "evaluate": "return true;",
           "comments": "",
           "triggerDescription": "",
-          "effectDescription": "Target receives Lock On. For as long as they have Lock On, they are also Shredded, and can’t Hide or become Invisible.",
+          "effectDescription": "",
           "isReaction": false,
           "actionType": "Automation",
           "frequency": "Unlimited",
