@@ -1,0 +1,120 @@
+{
+  "type": "lancer-automations-pack",
+  "version": 1,
+  "name": "Vlad Pack",
+  "exportDate": "2026-09-15T01:42:46.587Z",
+  "itemReactions": {
+    "mw_impaler_nailgun": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "",
+          "triggers": [
+            "onHit"
+          ],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": true,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": true,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "code",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "await api.executeSaveVsEffect(triggerData.hitTokens, {\n    stat: 'HULL', \n    origin: reactorToken, \n    title: 'Impale',\n    effects: ['immobilized', 'shredded'],\n    duration: {label: \"end\", turns: 1},\n});\n\n",
+          "onInit": "",
+          "onMessage": "",
+          "triggerSelf": true,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": true,
+          "dispositionFilter": null
+        }
+      ]
+    },
+    "mf_vlad": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "traits[1]",
+          "triggers": [
+            "onAttack",
+            "onTechAttack"
+          ],
+          "evaluate": "return triggerData.distanceToTrigger <= 3;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": true,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "activationType": "code",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "const isCoreActive = reactorToken.actor.system.statuses.core_power_active;\nconst damageAmount = isCoreActive ? 3 : 1;\n\nawait api.executeDamageRoll(\n    reactorToken, \n    [triggerData.triggeringToken], \n    damageAmount, \n    'Kinetic', \n    'Shrike Armor', \n    { ap: true }\n);",
+          "onInit": "",
+          "onMessage": "",
+          "triggerSelf": false,
+          "triggerOther": false,
+          "triggerTarget": true,
+          "outOfCombat": true,
+          "dispositionFilter": null
+        }
+      ]
+    },
+    "ms_caltrop_launcher": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "actions[0]",
+          "triggers": [
+            "onActivation"
+          ],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Quick Action",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": true,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": true,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "code",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "await api.placeZone(reactorToken, {\n    size: 1,\n    range: 5,\n    type: \"Burst\",\n    difficultTerrain: { movementPenalty: 1, isFlatPenalty: true },\n    title: \"Caltrops\",\n    icon: \"fas fa-road-spikes\",\n    centerLabel: \"Caltrops\",\n    hooks: {\n        entered: {\n            function: async (template, scene, token, context) => {\n                const api = game.modules.get('lancer-automations').api;\n                if (await api.consumeOncePerRound(token, `caltrops_entered_${template.id}`)) {\n                    await api.executeDamageRoll(\n                        token, \n                        [token], \n                        \"1d3\", \n                        \"Explosive\", \n                        \"Explosive Caltrops\", \n                        { ap: true }\n                    );\n                }\n            },\n            asGM: false\n        },\n        turnEnd: {\n            function: async (template, scene, token, context) => {\n                const api = game.modules.get('lancer-automations').api;\n                await api.executeDamageRoll(\n                    token, \n                    [token], \n                    \"1d3\", \n                    \"Explosive\", \n                    \"Explosive Caltrops\", \n                    { ap: true }\n                );\n            },\n            asGM: false\n        }\n    }\n});",
+          "onInit": "",
+          "onMessage": "",
+          "triggerSelf": true,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": true,
+          "dispositionFilter": null
+        }
+      ]
+    }
+  },
+  "generalReactions": {},
+  "startupScripts": []
+}
