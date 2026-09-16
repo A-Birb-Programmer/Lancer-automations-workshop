@@ -2,7 +2,7 @@
   "type": "lancer-automations-pack",
   "version": 1,
   "name": "Nuclear Cavalier",
-  "exportDate": "2026-09-09T06:40:31.910Z",
+  "exportDate": "2026-09-15T15:38:54.295Z",
   "itemReactions": {
     "t_nuclear_cavalier": {
       "itemType": "any",
@@ -14,7 +14,7 @@
             "onAttack",
             "onTechAttack"
           ],
-          "evaluate": "function (triggerType, triggerData, reactorToken, item, activationName, api) {\n    var firstAttack = api.getTokenFlags(reactorToken, \"firstAttack\")\n    var firstTechAttack = api.getTokenFlags(reactorToken, \"firstTechAttack\");\n    const isCurrentTurn = game.combat?.combatant?.tokenId === reactorToken.id;\n    const isInDangerZone = api.inDangerZone(reactorToken);\n    if (firstAttack == undefined) {\n        var firstAttack = true\n    }\n    if (firstTechAttack == undefined) {\n        var firstTechAttack = true\n    }\n\tvar firstAttack = firstAttack && firstTechAttack\n    if (triggerType == \"onTurnStart\" || triggerType == \"onTechAttack\") {\n        return true;\n    };\n    if (firstAttack && isCurrentTurn && isInDangerZone) {\n        return true;\n    };\n    return false;\n}",
+          "evaluate": "function (triggerType, triggerData, reactorToken, item, activationName, api) {\n    var firstAttack = api.getTokenFlags(reactorToken, \"firstAttack\")\n    var firstTechAttack = api.getTokenFlags(reactorToken, \"firstTechAttack\");\n    const isCurrentTurn = game.combat?.combatant?.tokenId === reactorToken.id;\n    const isInDangerZone = api.inDangerZone(reactorToken);\n    if (firstAttack == undefined) {\n        var firstAttack = true\n    }\n    if (firstTechAttack == undefined) {\n        var firstTechAttack = true\n    }\n\tvar firstAttack = firstAttack && firstTechAttack\n    \n    if (firstAttack && isCurrentTurn && isInDangerZone) {\n        return true;\n    };\n    if (triggerType == \"onTurnStart\" || triggerType == \"onTechAttack\") {\n        return true;\n    };\n    return false;\n}",
           "comments": "",
           "triggerDescription": "",
           "effectDescription": "",
@@ -72,6 +72,43 @@
           "triggerOther": false,
           "triggerTarget": false,
           "outOfCombat": false,
+          "dispositionFilter": null
+        }
+      ]
+    },
+    "mw_fuel_rod_gun": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "profiles[0]",
+          "triggers": [
+            "onAttack"
+          ],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": true,
+          "autoActivate": true,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": true,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "code",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "async function(triggerType,triggerData,reactorToken,item,activationName,api) {\n   \treactorToken.actor.system.heat.value = Math.max( reactorToken.actor.system.heat.value - 4, 0)\n}",
+          "onInit": "",
+          "onMessage": "",
+          "triggerSelf": true,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": true,
           "dispositionFilter": null
         }
       ]
