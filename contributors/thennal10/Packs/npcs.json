@@ -2,7 +2,7 @@
   "type": "lancer-automations-pack",
   "version": 1,
   "name": "NPC Pack",
-  "exportDate": "2026-09-15T02:10:37.941Z",
+  "exportDate": "2026-09-20T13:47:18.240Z",
   "itemReactions": {
     "npcf_mobile_printer_barricade": {
       "itemType": "any",
@@ -37,6 +37,41 @@
           "triggerOther": false,
           "triggerTarget": false,
           "outOfCombat": true,
+          "dispositionFilter": null
+        }
+      ]
+    },
+    "npcf_siege_armor_goliath": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "",
+          "triggers": [],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": false,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "flow",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "",
+          "onInit": "api.ensureLinkedBonus({\n    items: [item],\n    bonusData: {\n        id: `siege_armor_${item.id}`,\n        name: \"Siege Armor\",\n        type: \"immunity\",\n        subtype: \"resistance\",\n        damageTypes: [\"all\"],\n        condition: (state, actor, data, context) => {\n            const api = game.modules.get(\"lancer-automations\")?.api;\n            const attacker = actor.getActiveTokens()[0];\n            const defender = canvas.tokens.get(context.ownerTokenId);\n            return api.getTokenDistance(attacker, defender) > 3;\n        }\n    },\n    addOptions: { \n        duration: \"constant\" \n    }\n});",
+          "onMessage": "",
+          "triggerSelf": false,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": false,
           "dispositionFilter": null
         }
       ]
@@ -111,6 +146,41 @@
           "triggerOther": false,
           "triggerTarget": false,
           "outOfCombat": true,
+          "dispositionFilter": null
+        }
+      ]
+    },
+    "npcf_stampede_defense_berserker": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "",
+          "triggers": [],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": false,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "flow",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "",
+          "onInit": "api.ensureLinkedBonus({\n    items: [item],\n    bonusData: {\n        id: `stampede_defense_${item.id}`,\n        name: \"Stampede Defense\",\n        type: \"immunity\",\n        subtype: \"resistance\",\n        damageTypes: [\"all\"], \n        condition: (state, actor) => {\n            const api = game.modules.get(\"lancer-automations\")?.api;\n            const owner = canvas.tokens.get(context.ownerTokenId);\n            const statList = ['impaired', 'stunned', 'immobilized', 'shredded', 'slow', 'exposed'];\n            return !statList.some(s => owner.actor?.statuses?.has(s));\n        }\n    },\n    addOptions: {\n        duration: 'constant'\n    }\n});",
+          "onMessage": "",
+          "triggerSelf": false,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": false,
           "dispositionFilter": null
         }
       ]
@@ -219,6 +289,76 @@
           "activationMacro": "",
           "activationCode": "",
           "onInit": "api.ensureLinkedBonus({\n    items: [item],\n    bonusData: {\n        name: \"Shock Plating\",\n        type: \"immunity\",\n        subtype: \"resistance\",\n        damageTypes: [\"Kinetic\"]\n    },\n    addOptions: {\n        duration: \"constant\"\n    }\n});",
+          "onMessage": "",
+          "triggerSelf": false,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": false,
+          "dispositionFilter": null
+        }
+      ]
+    },
+    "npcf_siege_armor_pyro": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "",
+          "triggers": [],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": false,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "flow",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "",
+          "onInit": "api.ensureLinkedBonus({\n    items: [item],\n    bonusData: {\n        id: `siege_armor_${item.id}`,\n        name: \"Siege Armor\",\n        type: \"immunity\",\n        subtype: \"resistance\",\n        damageTypes: [\"all\"],\n        condition: (state, actor, data, context) => {\n            const api = game.modules.get(\"lancer-automations\")?.api;\n            const attacker = actor.getActiveTokens()[0];\n            const defender = canvas.tokens.get(context.ownerTokenId);\n            return api.getTokenDistance(attacker, defender) > 3;\n        }\n    },\n    addOptions: { \n        duration: \"constant\" \n    }\n});",
+          "onMessage": "",
+          "triggerSelf": false,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": false,
+          "dispositionFilter": null
+        }
+      ]
+    },
+    "npcf_siege_armor_bombard": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "",
+          "triggers": [],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": false,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "flow",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "",
+          "onInit": "api.ensureLinkedBonus({\n    items: [item],\n    bonusData: {\n        id: `siege_armor_${item.id}`,\n        name: \"Siege Armor\",\n        type: \"immunity\",\n        subtype: \"resistance\",\n        damageTypes: [\"all\"],\n        condition: (state, actor, data, context) => {\n            const api = game.modules.get(\"lancer-automations\")?.api;\n            const attacker = actor.getActiveTokens()[0];\n            const defender = canvas.tokens.get(context.ownerTokenId);\n            return api.getTokenDistance(attacker, defender) > 3;\n        }\n    },\n    addOptions: { \n        duration: \"constant\" \n    }\n});",
           "onMessage": "",
           "triggerSelf": false,
           "triggerOther": false,
