@@ -8,6 +8,6 @@ Small set of PC automations I've made. PC automations have their own packs, NPC 
 |------|--------------|-------|----|------------|
 | `Packs/amber_phantom.json` | **Amber Phantom**'s Hyperawareness and Battle Oracle. | | no | 4.2.7 |
 | `Packs/goblin.json` | **Goblin**'s Autonomous Assault (modified from @cath_5023's version on the PilotNET discord) and H0R_OS System Upgrade I. | | no | 4.2.7 |
-| `Packs/npcs.json` | **Barricade**'s Mobile Printer and Shock Plating, **Bombard**'s Cluster Munitions, **Scout**'s Expose Weakness, **Berserker**'s Aggression; and **Mirage**'s Blip. | | partial | 4.2.7 |
+| `Packs/npcs.json` | **Barricade**'s Mobile Printer and Shock Plating; **Bombard**'s Cluster Munitions and Siege Armor; **Scout**'s Expose Weakness; **Berserker**'s Stampede Defense and Aggression; **Mirage**'s Blip; and **Goliath/Pyro**'s Siege Armor. | | partial | 4.3.2 |
 | `Packs/pegasus.json` | **Pegasus**'s Ushabti Omnigun and Mimic Gun. | | partial | 4.2.7 |
 | `Packs/vlad.json` | **Vlad**'s Shrike Armor, Impaler Nailgun, and Caltrop Launcher. | | no | 4.2.7 |
