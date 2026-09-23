@@ -1,0 +1,374 @@
+{
+  "type": "lancer-automations-pack",
+  "version": 1,
+  "name": "NPC Pack",
+  "exportDate": "2026-09-20T13:47:18.240Z",
+  "itemReactions": {
+    "npcf_mobile_printer_barricade": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "",
+          "triggers": [
+            "onActivation"
+          ],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Quick Action",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": true,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": true,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "code",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "await api.spawnHardCover(reactorToken, { count: 1, size: 2, range: 1, name: 'Mobile Printer' });",
+          "onInit": "",
+          "onMessage": "",
+          "triggerSelf": true,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": true,
+          "dispositionFilter": null
+        }
+      ]
+    },
+    "npcf_siege_armor_goliath": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "",
+          "triggers": [],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": false,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "flow",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "",
+          "onInit": "api.ensureLinkedBonus({\n    items: [item],\n    bonusData: {\n        id: `siege_armor_${item.id}`,\n        name: \"Siege Armor\",\n        type: \"immunity\",\n        subtype: \"resistance\",\n        damageTypes: [\"all\"],\n        condition: (state, actor, data, context) => {\n            const api = game.modules.get(\"lancer-automations\")?.api;\n            const attacker = actor.getActiveTokens()[0];\n            const defender = canvas.tokens.get(context.ownerTokenId);\n            return api.getTokenDistance(attacker, defender) > 3;\n        }\n    },\n    addOptions: { \n        duration: \"constant\" \n    }\n});",
+          "onMessage": "",
+          "triggerSelf": false,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": false,
+          "dispositionFilter": null
+        }
+      ]
+    },
+    "npcf_cluster_munitions_bombard": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "",
+          "triggers": [
+            "onPreDamage"
+          ],
+          "evaluate": "return triggerData.targets && triggerData.targets.length > 1;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": true,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "code",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "const extraT = triggerData.targets.length - 1;\nconst dmg = api.tierValue(reactorToken, [2, 3, 4]);\nconst totalDmg = extraT * dmg;\n\n// bombard only has explosive weapons, but just in case\nconst dmgType = triggerData.flowState.data.damage?.[0]?.type || \"Explosive\";\ntriggerData.flowState.data.damage.push({ \n    type: dmgType, \n    val: String(totalDmg) \n});",
+          "onInit": "",
+          "onMessage": "",
+          "triggerSelf": true,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": true,
+          "dispositionFilter": null
+        }
+      ]
+    },
+    "npcf_expose_weakness_scout": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "",
+          "triggers": [
+            "onHit"
+          ],
+          "evaluate": "return triggerData.weapon.system?.lid === \"npcf_marker_rifle_scout\";",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": true,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "code",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "const dmg = api.tierValue(reactorToken, [4, 6, 8]);\n\nfor (const target of triggerData.hitTokens) {\n    await api.addGlobalBonus(target.actor, {\n        name: \"Expose Weakness\", \n        type: \"damage\",\n        damage: [{ type: \"Variable\", val: String(dmg) }],\n        applyToTargetter: true,\n        uses: 1,\n        consumeOnUsage: true,\n    }, {\n        duration: \"indefinite\",\n        origin: reactorToken,\n        consumption: {\n            trigger: \"onDamage\",\n        }\n    });\n}",
+          "onInit": "",
+          "onMessage": "",
+          "triggerSelf": true,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": true,
+          "dispositionFilter": null
+        }
+      ]
+    },
+    "npcf_stampede_defense_berserker": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "",
+          "triggers": [],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": false,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "flow",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "",
+          "onInit": "api.ensureLinkedBonus({\n    items: [item],\n    bonusData: {\n        id: `stampede_defense_${item.id}`,\n        name: \"Stampede Defense\",\n        type: \"immunity\",\n        subtype: \"resistance\",\n        damageTypes: [\"all\"], \n        condition: (state, actor) => {\n            const api = game.modules.get(\"lancer-automations\")?.api;\n            const owner = canvas.tokens.get(context.ownerTokenId);\n            const statList = ['impaired', 'stunned', 'immobilized', 'shredded', 'slow', 'exposed'];\n            return !statList.some(s => owner.actor?.statuses?.has(s));\n        }\n    },\n    addOptions: {\n        duration: 'constant'\n    }\n});",
+          "onMessage": "",
+          "triggerSelf": false,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": false,
+          "dispositionFilter": null
+        }
+      ]
+    },
+    "npcf_aggression_berserker": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "",
+          "triggers": [
+            "onDamage"
+          ],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": true,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "code",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "if (await api.consumeOncePerRound(reactorToken, 'aggression')) {\n    const adj = api.getTokensInRange(reactorToken);\n    if (!adj || !adj.length) return;\n\t\n    // do the roll publicly for transparency\n    const roll = await new Roll(`1d${adj.length}`).evaluate();\n    await triggerData.startRelatedFlow(); // dump trait card on chat\n    await roll.toMessage({\n        speaker: ChatMessage.getSpeaker({ token: reactorToken.document }),\n        flavor: \"Choosing random character adjacent to the Berserker\"\n    });\n    \n    const target = adj[roll.total - 1];\n    const chainAxe = api.findItemByLid(reactorToken, 'npcf_chain_axe_berserker');\n    await api.attackWith(chainAxe, [target]);\n};",
+          "onInit": "",
+          "onMessage": "",
+          "triggerSelf": false,
+          "triggerOther": false,
+          "triggerTarget": true,
+          "outOfCombat": true,
+          "dispositionFilter": null
+        }
+      ]
+    },
+    "npcf_blip_mirage": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "",
+          "triggers": [
+            "onAttack",
+            "onTechAttack",
+            "onEndActivation"
+          ],
+          "evaluate": "return api.hasLineOfSight(reactorToken, triggerData.triggeringToken) &&\n    api.checkGate(reactorToken, 'blip');",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": true,
+          "actionType": "Reaction",
+          "frequency": "1/Round",
+          "checkReaction": true,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": false,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "code",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "if (await api.consumeOncePerRound(reactorToken, 'blip')) {\n    const targets = await api.chooseToken(reactorToken, {\n        title: \"BLIP // SELECT ALLY\",\n        description: \"Choose an allied character within Sensors to teleport.\",\n        range: 'sensors',\n        disposition: 'friendly',\n        includeSelf: false\n    });\n\n    if (!targets || !targets.length) return;\n    const ally = targets[0];\n\n    await api.moveToken(ally, {\n        teleport: true,\n        range: 5,\n        title: \"BLIP // TELEPORT\",\n        description: `Teleport ${ally.name} 5 spaces in any direction.`\n    });\n};",
+          "onInit": "",
+          "onMessage": "",
+          "triggerSelf": false,
+          "triggerOther": true,
+          "triggerTarget": false,
+          "outOfCombat": true,
+          "dispositionFilter": [
+            "hostile"
+          ]
+        }
+      ]
+    },
+    "npcf_shock_plating_barricade": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "",
+          "triggers": [],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": false,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "flow",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "",
+          "onInit": "api.ensureLinkedBonus({\n    items: [item],\n    bonusData: {\n        name: \"Shock Plating\",\n        type: \"immunity\",\n        subtype: \"resistance\",\n        damageTypes: [\"Kinetic\"]\n    },\n    addOptions: {\n        duration: \"constant\"\n    }\n});",
+          "onMessage": "",
+          "triggerSelf": false,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": false,
+          "dispositionFilter": null
+        }
+      ]
+    },
+    "npcf_siege_armor_pyro": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "",
+          "triggers": [],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": false,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "flow",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "",
+          "onInit": "api.ensureLinkedBonus({\n    items: [item],\n    bonusData: {\n        id: `siege_armor_${item.id}`,\n        name: \"Siege Armor\",\n        type: \"immunity\",\n        subtype: \"resistance\",\n        damageTypes: [\"all\"],\n        condition: (state, actor, data, context) => {\n            const api = game.modules.get(\"lancer-automations\")?.api;\n            const attacker = actor.getActiveTokens()[0];\n            const defender = canvas.tokens.get(context.ownerTokenId);\n            return api.getTokenDistance(attacker, defender) > 3;\n        }\n    },\n    addOptions: { \n        duration: \"constant\" \n    }\n});",
+          "onMessage": "",
+          "triggerSelf": false,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": false,
+          "dispositionFilter": null
+        }
+      ]
+    },
+    "npcf_siege_armor_bombard": {
+      "itemType": "any",
+      "reactions": [
+        {
+          "reactionPath": "",
+          "triggers": [],
+          "evaluate": "return true;",
+          "comments": "",
+          "triggerDescription": "",
+          "effectDescription": "",
+          "isReaction": false,
+          "actionType": "Automation",
+          "frequency": "Unlimited",
+          "checkReaction": false,
+          "requireCanProvoke": false,
+          "checkUsage": false,
+          "autoActivate": false,
+          "awaitActivationCompletion": false,
+          "onlyOnSourceMatch": false,
+          "sceneReactor": "off",
+          "sceneId": "",
+          "activationType": "flow",
+          "activationMode": "instead",
+          "activationMacro": "",
+          "activationCode": "",
+          "onInit": "api.ensureLinkedBonus({\n    items: [item],\n    bonusData: {\n        id: `siege_armor_${item.id}`,\n        name: \"Siege Armor\",\n        type: \"immunity\",\n        subtype: \"resistance\",\n        damageTypes: [\"all\"],\n        condition: (state, actor, data, context) => {\n            const api = game.modules.get(\"lancer-automations\")?.api;\n            const attacker = actor.getActiveTokens()[0];\n            const defender = canvas.tokens.get(context.ownerTokenId);\n            return api.getTokenDistance(attacker, defender) > 3;\n        }\n    },\n    addOptions: { \n        duration: \"constant\" \n    }\n});",
+          "onMessage": "",
+          "triggerSelf": false,
+          "triggerOther": false,
+          "triggerTarget": false,
+          "outOfCombat": false,
+          "dispositionFilter": null
+        }
+      ]
+    }
+  },
+  "generalReactions": {},
+  "startupScripts": []
+}
